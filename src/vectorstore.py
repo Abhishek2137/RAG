@@ -4,9 +4,13 @@ from typing import Any, List
 
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
-from src.embedding import EmbeddingPipeline
+try:
+    from sentence_transformers import SentenceTransformer
+except Exception:  # pragma: no cover - fallback when the package is unavailable
+    SentenceTransformer = None
+
+from src.embedding import EmbeddingPipeline, SimpleEmbeddingModel
 
 
 class FaissVectorStore:
@@ -22,7 +26,11 @@ class FaissVectorStore:
         self.index = None
         self.metadata: List[Any] = []
         self.embedding_model = embedding_model
-        self.model = SentenceTransformer(embedding_model)
+        self.model = (
+            SentenceTransformer(embedding_model)
+            if SentenceTransformer is not None
+            else SimpleEmbeddingModel(embedding_model)
+        )
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         print(f"[INFO] Loaded embedding model: {embedding_model}")
