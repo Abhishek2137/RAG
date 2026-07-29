@@ -3,8 +3,8 @@ from typing import List, Any
 
 try:
     from langchain_core.documents import Document
-except ImportError:  # pragma: no cover - compatibility for older LangChain builds
-    from langchain_core.documents.base import Document  # type: ignore
+except Exception:  # pragma: no cover - compatibility for different LangChain layouts
+    Document = Any
 
 from langchain_community.document_loaders import PyPDFLoader, TextLoader, CSVLoader
 from langchain_community.document_loaders import Docx2txtLoader
