@@ -6,10 +6,27 @@ try:
 except Exception:  # pragma: no cover - compatibility for different LangChain layouts
     Document = Any
 
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, CSVLoader
-from langchain_community.document_loaders import Docx2txtLoader
-from langchain_community.document_loaders.excel import UnstructuredExcelLoader
-from langchain_community.document_loaders import JSONLoader
+# Import loaders defensively so the app can still start in environments where
+# one of the optional integrations is unavailable.
+try:
+    from langchain_community.document_loaders import PyPDFLoader, TextLoader, CSVLoader
+except Exception:  # pragma: no cover - fallback for older/newer package layouts
+    PyPDFLoader = TextLoader = CSVLoader = None
+
+try:
+    from langchain_community.document_loaders import Docx2txtLoader
+except Exception:  # pragma: no cover - fallback for older/newer package layouts
+    Docx2txtLoader = None
+
+try:
+    from langchain_community.document_loaders.excel import UnstructuredExcelLoader
+except Exception:  # pragma: no cover - fallback for older/newer package layouts
+    UnstructuredExcelLoader = None
+
+try:
+    from langchain_community.document_loaders import JSONLoader
+except Exception:  # pragma: no cover - fallback for older/newer package layouts
+    JSONLoader = None
 
 def load_all_documents(data_dir: str) -> List[Any]:
     """
